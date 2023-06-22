@@ -1,87 +1,7 @@
 <?php
 
-// データまとめ用の空文字変数
-$clickTable = '';
-
-// ファイルを開く（読み取り専用）
-$file01 = fopen('data/click.csv', 'r');
-// ファイルをロック
-flock($file01, LOCK_EX);
-
-// テーブルのヘッダ行を追加
-$clickTable .= "<table>\n";
-
-// ファイルを1行ずつ読み込み、テーブルの行を追加
-while (($clickLine = fgets($file01)) !== false) {
-    // 改行コードを除去してデータを取得
-    $clickData = rtrim($clickLine, PHP_EOL);
-    // カンマで分割して配列に格納
-    $clickValues = explode(',', $clickData);
-    // テーブルの行を追加
-    $clickTable .= "<tr>";
-    foreach ($clickValues as $clickValue) {
-        $clickTable .= "<td>{$clickValue}</td>";
-    }
-    $clickTable .= "</tr>\n";
-}
-
-// テーブルを閉じる
-$clickTable .= "</table>\n";
-
-// ロックを解除する
-flock($file01, LOCK_UN);
-// ファイルを閉じる
-fclose($file01);
-
-
-
-
-// 作ったスタンプのリストを表示する変数
-$stampListTable = '';
-
-// スタンプリストを呼び出す関数
-$filePath = 'data/stamp_list.csv';
-
-// ファイルが存在する場合にのみ処理を実行
-if (file_exists($filePath)) {
-
-    // ファイルを開く（読み取り専用）
-    $fileStampList = fopen('data/stamp_list.csv', 'r');
-
-    // テーブルのヘッダ行を追加
-    $stampListTable .= "<table>\n";
-
-    // 行数を取得
-    $lineCount = count(file($filePath));
-
-    // ファイルを1行ずつ読み込み、テーブルの行を追加
-    for ($i = 0; $i < $lineCount; $i++) {
-        // 行を読み込む
-        $stampLine = fgets($fileStampList);
-        // 改行コードを除去してデータを取得
-        $stampData = rtrim($stampLine, PHP_EOL);
-        // カンマで分割して配列に格納
-        $stampValues = explode(',', $stampData);
-        // テーブルの行を追加
-        $stampListTable .= "<tr>";
-        $stampListTable .= "<td class='column1'>{$stampValues[0]}</td>";
-        $stampListTable .= "<td class='column2'>{$stampValues[1]}</td>";
-        // 「生成」ボタンと「削除」ボタンを追加
-        $stampListTable .= "<td class='column3'><button id='generate$i'>生成</button></td>";
-        $stampListTable .= "<td class='column3'><button>削除</button></td>";
-
-        // テーブルを閉じる
-        $stampListTable .= "</tr>\n";
-    }
-
-    // テーブルを閉じる
-    $stampListTable .= "</table>\n";
-
-    // ファイルを閉じる
-    fclose($fileStampList);
-}
-
 // ⭐️２番目の挙動  =>  CSVファイルを読み込んで配列に変換、jsonにする
+
 $csvData = array();
 $file = fopen('data/stamp_list.csv', 'r');
 if ($file) {
@@ -94,27 +14,59 @@ if ($file) {
 // 配列をJSONに変換する
 $json = json_encode($csvData);
 
-// $rowToRead = 1; // 読み込む行の番号
-// $stampId = ''; // グローバル変数として宣言
 
-// $file = fopen($filePath, 'r');
-// if ($file) {
-//     $rowCounter = 0;
-//     while (($line = fgets($file)) !== false) {
-//         $rowCounter++;
-//         if ($rowCounter == $rowToRead) {
-//             $data = explode(',', $line);
-//             $stampId = trim($data[0]);
-//             $stampName = trim($data[1]);
-//             $html = '<input type="submit" value="' . htmlspecialchars($stampName) .
-//                 '"
-//                     name = "' . htmlspecialchars($stampId) . '" > ';
 
-//             break;
-//         }
-//     }
-//     fclose($file);
-// }
+
+// ⭐️４番目の挙動 => スマホ上のボタンを追加
+// データまとめ用の空文字変数
+$displayTable = '';
+// ボタンを追加するための変数
+$buttonHTML = '';
+
+// ファイルを開く（読み取り専用）
+$fileDisplayPath = 'data/stamp_display.csv';
+if (file_exists($fileDisplayPath)) {
+    $fileDisplay = fopen($fileDisplayPath, 'r');
+
+    // ファイルを1行ずつ読み込み、ボタンを追加
+    while (($displayLine = fgets($fileDisplay)) !== false) {
+        // 改行コードを除去してデータを取得
+        $displayData = rtrim($displayLine);
+        // カンマで分割して配列に格納
+        $displayValues = explode(',', $displayData);
+
+        // 最初の要素をname属性に、次の要素をvalue属性に設定したボタンを追加
+        $buttonHTML .= "<div>";
+        $buttonHTML .= "<img src=\"img/{$displayValues[0]}.png\"><br>";
+        $buttonHTML .= "<input type=\"submit\" value=\"{$displayValues[1]}\"name=\"{$displayValues[0]}\">";
+        $buttonHTML .= "</div>";
+    }
+
+    // ファイルを閉じる
+    fclose($fileDisplay);
+}
+
+
+
+
+// ⭐️６番目の挙動  =>  クリックされたCSVファイルを読み込んで配列に変換、jsonにする
+
+$csvChart = array();
+
+$filePath = 'data/submit_counts.csv';
+if (file_exists($filePath)) {
+    $fileChart = fopen($filePath, 'r');
+    // ファイルの読み込み処理などを実行
+
+    if ($fileChart) {
+        for ($i = 0; ($row = fgetcsv($fileChart)) !== false; $i++) {
+            $csvChart[$i] = $row;
+        }
+        fclose($fileChart);
+    }
+}
+// 配列をJSONに変換する
+$jsonChart = json_encode($csvChart);
 
 ?>
 
@@ -129,102 +81,211 @@ $json = json_encode($csvData);
     <title>スタンプ作成画面</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="reset.css">
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 </head>
 
 <body>
-    <div id="question">
-        <h2>福岡の名物といえば？</h2>
 
-        <form action="tvcha_create.php" method="POST">
-            <div id="button_area">
-                <input type="submit" value="明太子" name="choice01">
-                <input type="submit" value="うどん" name="choice02">
-                <input type="submit" value="ラーメン" name="choice03">
-                <input type="submit" value="屋台" name="choice04">
-            </div>
-        </form>
-
-
-        <h3>スタンプの押された数とパーセンテージ</h3>
-        <div id="click_table">
-            <?= $clickTable ?>
-        </div>
-    </div>
 
     <!-- ⭐️ここが大元！スタンプ生成ブロック -->
     <div id="setting">
         <form action="stamp_create.php" method="POST">
             <div>
-                <div class="regi_wrapper">
-                    <div class="regi_item">
-                        登録ID
+                <div>
+                    <div class="regi_wrapper">
+                        <div class="regi_item">
+                            登録ID
+                        </div>
+                        <div class="regi_form">
+                            <input type="text" name="register_id" pattern="[0-9a-zA-Z]{2}" title="2桁の半角英数字を入力してください" inputmode="verbatim">
+                        </div>
                     </div>
-                    <div class="regi_form">
-                        <input type="text" name="register_id" pattern="[0-9a-zA-Z]{2}" title="2桁の半角英数字を入力してください">
-                    </div>
-                </div>
-                <div class="regi_wrapper">
-                    <div class="regi_item">
-                        スタンプ名
-                    </div>
-                    <div class="regi_form">
-                        <input type="text" name="stamp_name">
+                    <div class="regi_wrapper">
+                        <div class="regi_item">
+                            スタンプ名
+                        </div>
+                        <div class="regi_form">
+                            <input type="text" name="stamp_name">
+                        </div>
                     </div>
                 </div>
                 <div>
-                    <button type="submit">登録</button>
+                    <button type="submit" id="resiter_button">登録</button>
                 </div>
             </div>
         </form>
+    </div>
 
-
-        <!-- 登録したスタンプを表示するエリア -->
+    <!-- ⭐️登録したスタンプを表示するエリア -->
+    <form>
         <div id="stamp_list">
             <!-- <h3>登録されたスタンプ</h3> -->
             <div id="stamp_list_table">
-                <?= $stampListTable ?>
+
             </div>
         </div>
-    </div>
-    <script>
-        let rowToRead
-        $("button[id^='generate']").click(function() {
-            let buttonId = $(this).attr("id");
-            rowToRead = buttonId.substr(buttonId.indexOf("generate") + 8);
-            console.log(buttonId, rowToRead);
-        });
+    </form>
 
+    <!-- ⭐️円グラフ表示エリア -->
+    <div id="chart_wrapper">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <!-- ⭐️５番目の挙動 ユーザーに表示するエリア tvcha_create.phpにPOST-->
+    <div id="question">
+        <h2>福岡の名物といえば？</h2>
+
+        <form action="tvcha_create.php" method="POST">
+            <div id="button_area">
+                <?= $buttonHTML ?>
+            </div>
+        </form>
+    </div>
+
+
+
+    <script>
+        // ⭐️３番目の挙動 => jsonからスタンプリストを作成
         const stampList = <?= $json ?>;
         console.log(stampList);
 
-        // $(document).ready(function() {
-        //     let choiceCount = 0; // 変数をグローバルスコープで宣言
+        // テーブルのヘッダ行を作成
+        let tableHTML = "<table>\n";
+        // stampListのデータをテーブルに追加
+        for (let i = 0; i < stampList.length; i++) {
+            let stamp = stampList[i];
+            tableHTML += "<tr>";
+            tableHTML += "<td class='column1'>" + stamp[0] + "</td>";
+            tableHTML += "<td class='column2'>" + stamp[1] + "</td>";
+            tableHTML += "<td class='column3'><button name='generate' value='" + i + "'formmethod='POST' formaction='stamp_display.php'>生成</button></td>";
+            tableHTML += "<td class='column3'><button name='delete' value='" + i + "' formmethod='POST' formaction='stamp_delete.php'>削除</button></td>";
+            tableHTML += "</tr>\n";
+        }
 
-        //     function countButtonClick() {
-        //         if ($(this).attr('id') === 'registerButton') {
-        //             choiceCount = parseInt($('#choiceCount').val()) + 1;
-        //             $('#choiceCount').val(choiceCount);
-        //             console.log(choiceCount);
-        //         }
+        // テーブルを閉じる
+        tableHTML += "</table>\n";
+
+        // テーブルをHTMLに追加
+        $("#stamp_list_table").html(tableHTML);
+
+        // ⭐️７番目の挙動 => jsonからスタンプリストを作成
+        const chart = <?= $jsonChart ?>;
+        console.log(chart);
+
+
+        // ⭐️８番目の挙動 円グラフを作る
+        // データの取得
+        const jsonData = JSON.parse('<?php echo $jsonChart; ?>');
+        const data = jsonData.map(item => item[2]); // 数値部分を抽出
+
+        // ラベルの取得
+        const labels = jsonData.map(item => item[0]); // ラベル部分を抽出
+
+        // 色の設定
+        const colors = ['#687c8d', '#96abbd', '#e9e9e9', '#c5bfb9', '#948f89', '#000000']; // 色の配列
+
+        // チャートの描画
+        const ctx = $('#myChart')[0].getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors.slice(0, data.length) // 必要な分だけ色を使用する
+
+                }]
+
+            },
+            options: {
+                plugins: {
+                    datalabels: {
+                        color: '#242424', // データラベルのテキスト色
+                        font: {
+                            size: 16 // データラベルのフォントサイズ
+                        },
+                        formatter: (value, context) => {
+                            const label = context.chart.data.labels[context.dataIndex];
+                            return label + ': ' + value;
+                        },
+                        display: true
+                    },
+                    legend: {
+
+                    }
+                }
+            },
+            plugins: [
+                ChartDataLabels,
+            ]
+        });
+
+        // 生成ボタンを押したら、中間テーブルを作成
+        // $("button[name='generate']").click(function() {
+        // let btnVal = $(this).val(); // ボタンの値を取得
+        // let element = stampList[index]; // JSONデータから対応する要素を取得
+
+        // console.log(btnVal);
+
+        // 要素の値を取得
+        // let value1 = element[0];
+        // let value2 = element[1];
+
+        // Ajaxリクエストを送信
+        // $.ajax({
+        //     url: "stamp_display.php",
+        //     type: "POST",
+        //     data: {
+        //         value1: value1,
+        //         value2: value2
+        //     },
+        //     success: function(response) {
+        //         // リクエスト成功時の処理
+        //         console.log("POST成功:", response);
+        //     },
+        //     error: function(xhr, status, error) {
+        //         // リクエストエラー時の処理
+        //         console.error("POSTエラー:", error);
         //     }
-
-        //     // 登録ボタンがクリックされたらカウント関数を実行
-        //     $('button[type="submit"]').click(countButtonClick);
+        // });
         // });
 
-        // <div>
-        //     deadline: <input type="date" name="deadline">
-        // </div>Z
 
-        // <div>
-        //     <button>submit</button>
-        // </div>
+        // // 「生成」ボタンを押したらスマホ内にスタンプを表示
+        // $("button[name='generate']").click(function() {
+        //     // ボタンの値を取得
+        //     let index = $(this).val();
+
+        //     // JSONデータから対応する要素を取得
+        //     let element = stampList[index];
+
+        //     // 要素の値を取得
+        //     let value = element[1];
+
+        //     let input = $("<input>").attr({
+        //         type: "submit",
+        //         value: value,
+        //         name: "YY"
+        //     });
+
+        //     // ボタンを追加する要素を取得
+        //     let buttonArea = $("#button_area");
+
+        //     // ボタンを追加
+        //     input.appendTo(buttonArea);
+
+        //     // ボタンを無効化
+        //     $(this).prop("disabled", true);
+        // });
     </script>
+
+
 
 
 </body>

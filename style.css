@@ -1,22 +1,22 @@
 body {
     width: 500px;
-    background-image: url("img/bg_office.jpg");
+    height: auto;
     background-repeat: no-repeat;
-    top: 60px;
+    top: 50px;
     left: 0px;
     position: relative;
 }
 
 #question {
-    top: 300px;
-    left: 50px;
+    top: 330px;
+    left: 600px;
     position: absolute;
 }
 
 
 table {
     border-collapse: collapse;
-    width: 300px;
+    width: 600px;
 }
 
 td {
@@ -35,10 +35,11 @@ td {
 /* スタンプの登録エリア */
 #setting {
     width: 200px;
-    top: 5px;
-    left: 555px;
+    top: 0px;
+    left: 585px;
     position: absolute;
 }
+
 
 .regi_wrapper {
     display: flex;
@@ -52,6 +53,34 @@ td {
     width: 100px;
 }
 
+#resiter_button {
+    width: 46px;
+    height: 45px;
+    top: 3px;
+    left: 198px;
+    position: absolute;
+}
+
+/* スマホ内に表示されたボタンエリア */
+
+#button_area {
+    width: 440px;
+    display: flex;
+    justify-content: left;
+    flex-wrap: wrap;
+}
+
+
+#button_area img {
+    width: 100px;
+    height: 100px;
+}
+
+#button_area div {
+    margin: 4px;
+    /* 右側に10pxの隙間を開ける */
+}
+
 input {
     width: 100px;
 }
@@ -60,8 +89,8 @@ input {
 #stamp_list {
     width: 250px;
     padding: 5px;
-    top: 0px;
-    left: 200px;
+    top: 54px;
+    left: 581px;
     position: absolute;
     /* テキストを折り返さないようにする */
     white-space: nowrap;
@@ -91,4 +120,15 @@ input {
 
 .column3 {
     width: 55px;
+}
+
+#chart_wrapper {
+    width: 300px;
+    top: 0px;
+    left: 846px;
+    position: absolute;
+}
+
+.image_thumnail img{
+    width: 100px;
 }
