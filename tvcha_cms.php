@@ -182,7 +182,7 @@ $jsonChart = json_encode($csvChart);
 
         // ウェブアプリのFirebaseの設定
         const firebaseConfig = {
-            apiKey: "AIzaSyBs-rcINsUSZe7bD7OeLTrNcXm6-OInABg",
+            apiKey: "",
             authDomain: "tvcha-9cae7.firebaseapp.com",
             projectId: "tvcha-9cae7",
             storageBucket: "tvcha-9cae7.appspot.com",
