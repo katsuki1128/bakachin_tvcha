@@ -7,16 +7,11 @@ body {
     position: relative;
 }
 
-#question {
-    top: 330px;
-    left: 600px;
-    position: absolute;
-}
 
 
 table {
     border-collapse: collapse;
-    width: 600px;
+    width: 470px;
 }
 
 td {
@@ -128,7 +123,9 @@ input {
     left: 846px;
     position: absolute;
 }
-
+/************************** 
+登録スタンプ表示画面
+***************************/
 .image_thumnail img{
-    width: 100px;
+    width: 36px;
 }
