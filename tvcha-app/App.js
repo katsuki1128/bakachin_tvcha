@@ -1,15 +1,32 @@
-import { StyleSheet, Text, View,StatusBar ,Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  Image,
+  Button,
+  TouchableOpacity,
+} from 'react-native';
+
 import React, { useState, useEffect } from 'react';
 
 import "firebase/firestore";
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, } from "firebase/firestore";
-import { doc, updateDoc } from "firebase/firestore";
+
+import { Camera, CameraType } from 'expo-camera';
+
+import {
+  getFirestore,
+  collection,
+  getDoc,
+  doc,
+  updateDoc,
+  onSnapshot,
+} from "firebase/firestore";
+  
 import { getStorage, ref } from "firebase/storage";
 // import * as React from 'react';
 // import {NavigationContainer} from '@react-navigation/native';
-
-import { TouchableOpacity } from 'react-native';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBs-rcINsUSZe7bD7OeLTrNcXm6-OInABg",
@@ -29,59 +46,84 @@ const storage = getStorage(app);
 // ストレージサービスからストレージ参照を作成する
 const storageRef = ref(storage);
 
-
 //----------------------------------------
 // ▼firebaseから読み込んで画面に表示する
 //----------------------------------------
 
-
+// ⭐️stampListという空の配列を作り、今後setStampListメソッドで
+// 更新していくことをuseState([])で定義
 const App = () => {
-  const [dataList, setDataList] = useState([]);
+  const [stampList, setStampList] = useState([]);
+  const [userList, setUserList] = useState([]);
 
-  useEffect(() => {
-    getFirebaseItems();
-  }, []);
-
-  const getFirebaseItems = async () => {
-    const querySnapshot = await getDocs(collection(db, "tvcha"));
-
-    const newDataList = [];
-    querySnapshot.forEach((doc) => {
-      const { img, point,count } = doc.data();
-      newDataList.push({
+// ⭐️初回読み込み時のみスタンプリストを読み込む
+useEffect(() => {
+  onSnapshot(collection(db, "tvcha"), (querySnapshot) => {
+    const newStampList = querySnapshot.docs.map((doc) => {
+      const { img, point, count } = doc.data();
+      return {
         id: doc.id,
         img,
         point,
-        count
-      });
+        count,
+      };
     });
-    setDataList(newDataList);
-  };
-    
-  // コンソールログで各要素を表示
-  dataList.forEach((data) => {
-    // console.log(data); 
+    setStampList(newStampList);
   });
-  
+}, []);
+
+// ⭐️初回読み込み時のみユーザー情報を読み込む
+useEffect(() => {
+  onSnapshot(collection(db, "tvcha-user"), (querySnapshot) => {
+    const newUserList = querySnapshot.docs.map((doc) => {
+      const { user, point } = doc.data();
+      return {
+        id: doc.id,
+        user,
+        point,
+      };
+    });
+    setUserList(newUserList);
+  });
+}, []);
+    
   return (  
-  <View style={[styles.container]}>
-      <Text style={styles.text}>ユーザーへの表示画面</Text>
+    <View style={[styles.container]}>
+      <Text style={{ fontSize: 36 }}>👇テレビをスマホに配信</Text>
+      <Image
+        style={styles.imagetv}
+        source={require('./Sequence04.gif')} />
+
+      
+      <Text style={{ fontSize: 36 }}>👇スタンプエリア</Text>
       <View style={styles.row}>
-        {dataList.map((data, id) => (
+        {stampList.map((data, id) => (
           <TouchableOpacity
           key={id}
-          style={styles.stampContainer}
-          onPress={() => handleItemClick(data, id)}
+          style={styles.stampContainer}i
+          onPress={() => handleItemClick(data, "tvcha", data.id, "tvcha-user", userList[0].id)}
           >
           <Image
             style={styles.image}
             source={{ uri: data.img }} />
           <Text
-            style={styles.text}>
+            style={[styles.text, { textAlign: 'center' }]}>
              {data.point}
-          </Text>
+            </Text>
+          {/* <Text
+          style={styles.text}>
+            {data.count}
+        </Text> */}
         </TouchableOpacity>
-      ))}
+        ))}
+      </View>
+
+      <Text style={{ fontSize: 36 }}>👇持ちポイント</Text>
+      <View>
+      
+        <Text style={{ fontSize: 48 }}>
+          {userList.length > 0 ? userList[0].point : ''}
+        </Text>
          </View>
       <StatusBar style="auto" />
     </View>
@@ -92,30 +134,62 @@ const App = () => {
 // ▼firebaseに押された数を保存する
 //----------------------------------------
 
-const handleItemClick = async (data, id) => {
+const handleItemClick = async (data, collection1, docId1, collection2, docId2) => {
   try {
-    console.log(data);
+    const currentCount = data.count;
+    const consumptionPoint = data.point;
 
-      // Firestoreから該当するドキュメントを取得
+    const updatedCount = currentCount + 1;
 
-      // 現在のカウント値を取得
-      const currentCount = data.count;
+    // Firestoreのドキュメントを更新
+    await updateDoc(doc(db, collection1, docId1), {
+      count: updatedCount
+    });
 
-      // カウント値をインクリメント
-      const updatedCount = currentCount + 1;
-      console.log(updatedCount);
-    
-      // Firestoreのドキュメントを更新
-      await updateDoc(doc(db, "tvcha", id), {
-        count: updatedCount
+    // Firestoreからcollection2とdocId2で指定されるドキュメントを取得
+    const docSnapshot = await getDoc(doc(db, collection2, docId2));
+    if (docSnapshot.exists()) {
+      const { point } = docSnapshot.data();
+
+      // ドキュメントのpointを使用して更新
+      await updateDoc(doc(db, collection2, docId2), {
+        point: point - consumptionPoint
       });
 
       console.log("カウントが正常に更新されました。");
-    
+    } else {
+      console.log("指定されたドキュメントが存在しません。");
+    }
   } catch (error) {
     console.error("カウントの更新中にエラーが発生しました:", error);
   }
 };
+
+//----------------------------------------
+// ▼カメラを起動する
+//----------------------------------------
+// export default function App() {
+//   const [type, setType] = useState(CameraType.back);
+//   const [permission, requestPermission] = Camera.useCameraPermissions();
+
+//   function toggleCameraType() {
+//     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
+//   }
+
+//   return (
+//     <View style={styles.container}>
+//       <Camera style={styles.camera} type={type}>
+//         <View style={styles.buttonContainer}>
+//           <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
+//             <Text style={styles.text}>Flip Camera</Text>
+//           </TouchableOpacity>
+//         </View>
+//       </Camera>
+//     </View>
+//   );
+// }
+
+
 
 //----------------------------------------
 // ▼styleを設定する
@@ -130,7 +204,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    fontSize: 16,
+    fontSize: 18,
+  },
+  imagetv: {
+    width: 480,
+    height: 240,
   },
   image: {
     width: 80,
@@ -146,12 +224,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
-// export { db };
 
-
-
-// import {  } from 'expo-status-bar';
-// import firebase from "firebase/app";
-// import { Firestore } from 'firebase/firestore';
-// import { doc, getDoc } from "firebase/firestore";
-// import firestore from "@react-native-firebase/firestore";
