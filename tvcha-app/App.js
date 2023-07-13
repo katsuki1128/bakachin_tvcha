@@ -165,6 +165,8 @@ const handleItemClick = async (data, collection1, docId1, collection2, docId2) =
   }
 };
 
+
+
 //----------------------------------------
 // ▼カメラを起動する
 //----------------------------------------
