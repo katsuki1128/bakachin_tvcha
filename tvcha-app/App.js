@@ -6,6 +6,7 @@ import {
   Image,
   Button,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 
 import React, { useState, useEffect } from 'react';
@@ -55,6 +56,7 @@ const storageRef = ref(storage);
 const App = () => {
   const [stampList, setStampList] = useState([]);
   const [userList, setUserList] = useState([]);
+  const [inputValue, setInputValue] = useState('');
 
 // ⭐️初回読み込み時のみスタンプリストを読み込む
 useEffect(() => {
@@ -86,10 +88,36 @@ useEffect(() => {
     setUserList(newUserList);
   });
 }, []);
-    
+  
+//----------------------------------------
+// ▼userIdとpasswordという状態変数を追加し、handleUserIdChange関数とhandlePasswordChange関数でそれぞれの入力値を更新
+//----------------------------------------
+  
+const [userId, setUserId] = useState('');
+const [password, setPassword] = useState('');
+
+const handleUserIdChange = (text) => {
+  setUserId(text);
+};
+
+const handlePasswordChange = (text) => {
+  setPassword(text);
+};
+
+// フォームの送信処理
+const handleSubmit = () => {
+  console.log('User ID:', userId);
+  console.log('Password:', password);
+  // ここでIDとパスワードを使った処理を実行する
+};
+  
+//----------------------------------------
+// ▼画面描画内容
+//----------------------------------------
+  
   return (  
     <View style={[styles.container]}>
-      <Text style={{ fontSize: 36 }}>👇テレビをスマホに配信</Text>
+      <Text style={{ fontSize: 36 }}>👇テレビをスマホに配信だよ</Text>
       <Image
         style={styles.imagetv}
         source={require('./Sequence04.gif')} />
@@ -126,6 +154,24 @@ useEffect(() => {
         </Text>
          </View>
       <StatusBar style="auto" />
+
+      <View style={{ marginTop: 20 }}>
+        <TextInput
+          style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10 }}
+          onChangeText={handleUserIdChange}
+          value={userId}
+          placeholder="IDを入力してください"
+        />
+        <TextInput
+          style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10 }}
+          onChangeText={handlePasswordChange}
+          value={password}
+          placeholder="パスワードを入力してください"
+          secureTextEntry={true} // パスワード入力を隠す
+        />
+        <Button title="送信" onPress={handleSubmit} />
+      </View>
+
     </View>
   );
 };
