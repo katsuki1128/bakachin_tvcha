@@ -1,6 +1,5 @@
 <?php
 
-
 ?>
 
 <!DOCTYPE html>
@@ -13,19 +12,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>スタンプ作成画面</title>
 
+    <!-- CSS & Tailwind -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="reset.css">
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.4.4/dist/flowbite.min.css" />
 
+    <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.piecelabel.js/0.15.0/Chart.PieceLabel.min.js"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script> -->
 
+    <!-- fontAwesome -->
+    <script src="https://kit.fontawesome.com/e6a146d4cb.js" crossorigin="anonymous"></script>
 
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+
     <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.css" rel="stylesheet" /> -->
+
+    <!-- <script src="tvcha-app/node_modules/chartjs-plugin-labels/dist/chartjs-plugin-labels.js"></script> -->
 
 </head>
 
@@ -35,34 +44,80 @@
     ⭐️ここが大元！スタンプ生成ブロック  
     ------------------------------------------------->
 
-    <form>
-        <fieldset>
-            <legend>スタンプ⭐️登録画面</legend>
-            <div>画像登録：
-                <input type="file" id="img" />
-            </div>
+    <section class="bg-gray-200">
+        <div class="flex flex-col items-center justify-center px-6 pt-8 pb-4 mx-auto">
+            <div class="w-full bg-white rounded-lg shadow sm:max-w-3xl md:w-4/5 xl:p-0">
+                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
 
-            <div>ポイント： <input type="text" id="point" /></div>
-            <div><input type="hidden" id="count" value=0 /></div>
-            <div>
-                <button type="button" id="send">登録</button>
+                    <div>
+                        <img class="w-40 h-15 mr-2" src="./img/tvcha_logo.png" alt="logo">
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold mb-3 leading-tight tracking-tight text-purple-800 md:text-2xl">
+                            スタンプを登録する
+                        </h1>
+                    </div>
+                    <form>
+                        <div class="flex items-start">
+                            <div class="w-3/4">
+
+                                <!-- 入力エリア -->
+
+                                <!-- 画像登録 -->
+                                <div class="w-full flex items-start mt-3 mb-3">
+                                    <label class="w-1/4 block mt-3 mb-3 text-sm font-medium text-gray-900" for="id">画像登録</label>
+                                    <label class="block">
+                                        <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="img" type="file">
+                                    </label>
+                                </div>
+
+
+                                <!-- ポイント登録 -->
+                                <div class="flex items-start mt-3 mb-3 ">
+                                    <label for="point" class="w-1/4 mt-3 mb-3 text-sm font-medium text-gray-900">ポイント</label>
+                                    <input type="text" name="point" id="point" placeholder="000" class="w-3/4 bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5" required="">
+                                </div>
+                                <div><input type="hidden" id="count" value=0 /></div>
+                            </div>
+
+                            <!-- 入力エリア -->
+                            <div>
+                                <div id="imagePreview"></div>
+                            </div>
+                        </div>
+
+                        <!-- <button type="button" id="send" class="w-full mt-3 mb-3 text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">登録</button> -->
+                        <button type="button" id="send" class="w-full mt-3 mb-3 text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" disabled>登録</button>
+
+                    </form>
+
+                </div>
             </div>
-            <div id="imagePreview"></div>
-        </fieldset>
-    </form>
+        </div>
+    </section>
 
     <!-- ⭐️スタンプ一覧表示エリア -->
-    <fieldset>
-        <legend>スタンプ⭐️一覧</legend>
-        <p id="output"></p>
-    </fieldset>
+    <section class="bg-gray-200">
+        <div class="flex flex-col items-center justify-center px-6 pt-4 pb-4 mx-auto">
+            <div class="w-full bg-white rounded-lg shadow sm:max-w-3xl md:w-4/5 xl:p-0">
+                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                    <h1 class="text-xl font-bold mb-3 leading-tight tracking-tight text-purple-800 md:text-2xl">
+                        スタンプ一覧
+                    </h1>
+                    <!-- ⭐️スタンプ表示エリア -->
+                    <div class="flex flex-col items-center justify-center">
+                        <p class="w-full" id="output"></p>
+                    </div>
 
+                    <!-- ⭐️円グラフ表示エリア -->
+                    <div class="w-full flex flex-col items-center justify-center" id="chart_wrapper">
+                        <canvas id="myChart"></canvas>
+                    </div>
 
-    <!-- ⭐️円グラフ表示エリア -->
-
-    <div id="chart_wrapper">
-        <canvas id="myChart"></canvas>
-    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!----------------------------------------------
     ⭐️選択した画像のプレビュー表示
@@ -120,6 +175,8 @@
             getDownloadURL
         } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
+
+
         // ウェブアプリのFirebaseの設定
         const firebaseConfig = {
             apiKey: "AIzaSyBs-rcINsUSZe7bD7OeLTrNcXm6-OInABg",
@@ -143,42 +200,95 @@
 
         const q = query(collection(db, "tvcha"), orderBy("time", "desc"));
 
-
         //----------------------------------------
-        // ▼送信ボタンクリック時にデータを送信する処理を実装
+        // ▼画像とポイント入力フォームに半角数字が入力された時のみ登録ボタンが有効になる
         //----------------------------------------
 
-        $("#send").on("click", function() {
-            const imgFile = $("#img")[0].files[0]; // 選択された画像ファイルを取得
+        $(document).ready(function() {
+            function toggleButton() {
+                const imgFile = $("#img")[0].files[0]; // 選択された画像ファイルを取得
+                const pointValue = $("#point").val(); // ポイントの入力値を取得
 
-            // Firebase Storage に画像をアップロード
-            const storageRef = ref(storage, 'images/' + imgFile.name);
-            uploadBytes(storageRef, imgFile)
-                .then((snapshot) => {
-                    return getDownloadURL(snapshot.ref);
-                })
-                .then((downloadURL) => {
-                    console.log('ダウンロード URL:', downloadURL);
+                // #pointに全角文字が入力されている場合はボタンを無効化
+                if (hasFullWidthCharacter(pointValue) || !hasHalfWidthNumber(pointValue)) {
+                    $("#send").prop("disabled", true);
+                } else {
+                    // 画像が選択されている場合はボタンを有効化
+                    if (imgFile) {
+                        $("#send").prop("disabled", false);
+                    } else {
+                        $("#send").prop("disabled", true);
+                    }
+                }
+            }
 
-                    const postData = {
-                        img: downloadURL, // ダウンロード URL を Firestore の 'img' フィールドに保存
-                        point: Number($("#point").val()), // 文字列を数値に変換
-                        count: Number($("#count").val()), // 文字列を数値に変換
-                        time: serverTimestamp(),
-                    };
+            // 画像ファイルが変更されたらボタンの有効/無効を切り替える
+            $("#img").on("change", toggleButton);
 
-                    addDoc(collection(db, "tvcha"), postData)
-                        .then(() => {
-                            console.log('データを Firestore に保存しました');
-                            $("#img,#point,#count").val(""); // フォームをリセット
-                        })
-                        .catch((error) => {
-                            console.error('データの保存中にエラーが発生しました', error);
-                        });
-                })
-                .catch((error) => {
-                    console.error('画像のアップロード中にエラーが発生しました', error);
-                });
+            // ポイントの入力が変更されたらボタンの有効/無効を切り替える
+            $("#point").on("input", toggleButton);
+
+            // 全角文字が含まれるかをチェックする関数
+            function hasFullWidthCharacter(str) {
+                for (let i = 0; i < str.length; i++) {
+                    //charCodeAtの0xFF01は全角の！の文字コード、0xFF5Eは全角の～の文字コード
+                    if (str.charCodeAt(i) >= 0xFF01 && str.charCodeAt(i) <= 0xFF5E) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // 半角数字のみが含まれるかをチェックする関数
+            function hasHalfWidthNumber(str) {
+                //.testは正規表現にマッチするかどうかを調べるメソッド /^[0-9]+$/は半角数字のみを表す正規表現 +$は1文字以上の繰り返し
+                return /^[0-9]+$/.test(str);
+            }
+
+
+            //----------------------------------------
+            // ▼登録ボタンクリック時にデータを送信する処理を実装
+            //----------------------------------------
+
+            // 登録ボタンがクリックされたときの処理
+            $("#send").on("click", function() {
+                // ボタンの有効/無効を判定する処理は、上記のtoggleButton()関数で行っているため、ここではそのまま送信処理を行う
+                const imgFile = $("#img")[0].files[0]; // 選択された画像ファイルを取得
+                const pointValue = $("#point").val().trim();
+
+                // 以下の処理は画像が選択され、かつ#pointに全角文字が含まれていない場合のみ実行される
+                const storageRef = ref(storage, 'images/' + imgFile.name);
+                uploadBytes(storageRef, imgFile)
+                    .then((snapshot) => {
+                        return getDownloadURL(snapshot.ref);
+                    })
+                    .then((downloadURL) => {
+                        console.log('ダウンロード URL:', downloadURL);
+
+                        const postData = {
+                            img: downloadURL,
+                            point: Number($("#point").val()),
+                            count: Number($("#count").val()),
+                            time: serverTimestamp(),
+                        };
+
+                        addDoc(collection(db, "tvcha"), postData)
+                            .then(() => {
+                                console.log('データを Firestore に保存しました');
+                                $("#img,#point,#count").val("");
+                                $("#send").prop("disabled", true); // 送信後、ボタンを無効化
+                            })
+                            .catch((error) => {
+                                console.error('データの保存中にエラーが発生しました', error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error('画像のアップロード中にエラーが発生しました', error);
+                    });
+            });
+
+            // 初期状態でボタンを無効化
+            $("#send").prop("disabled", true);
         });
 
 
@@ -223,21 +333,33 @@
                 documents.push(document);
             });
 
-            // ドキュメントを取得して配列に格納
-            const dataArray = documents.map((document, index) => ({
-                id: index,
-                ...document.data
-            }));
-            console.log(dataArray);
+            const countData = []; // countDataを初期化しておく
+            const imageUrls = []; // imageUrlsを初期化しておく
+
+            //----------------------------------------
+            // id: 'ドキュメントのID',
+            // data: {
+            //      img: '画像のURL',
+            //      point: 'ポイント',
+            //      count: 'カウント',
+            //      time: '作成日時など'
+            //----------------------------------------
 
             let tableRows = '';
             documents.forEach(function(document, index) {
-                // const idFormatted = String(dataArray[index].id).padStart(3, '0');
-                const deleteButton = `<button class="delete-btn" data-id="${document.id}">削除</button>`;
-                // const editButton = `<button class="edit-btn" data-id="${document.id}">変更</button>`;
+                const deleteButton = `<button class="delete-btn" data-id="${document.id}"><i class="fas fa-trash"></i></button>`;
+                const rowStyleClass = index % 2 === 0 ? 'even-row' : 'odd-row'; // 奇数行と偶数行でスタイルを切り替える
+
+                // countDataにdocument.data.countを追加
+                countData.push(document.data.count);
+
+                // imageUrlsにdocument.data.imgを追加
+                imageUrls.push(document.data.img);
+
+                console.log("countData", countData, "imageUrls", imageUrls);
 
                 tableRows += `
-                    <tr style="height: 46px;">
+                    <tr style="height: 46px;" class="${rowStyleClass}">
                         <td>
                             <div class="image_thumnail" id="image-${index}"></div>
                         </td>
@@ -246,8 +368,7 @@
                         </td>
                         <td>${document.data.count}</td>
                         <td>${convertTimestampToDatetime(document.data.time.seconds)}</td>
- 
-                        <td>${deleteButton}</td> 
+                         <td>${deleteButton}</td> 
                     </tr>
                     `;
 
@@ -263,14 +384,13 @@
             });
 
             const table = `
-                <table>
+                <table class="w-full">
                     <thead>
                     <tr>
                         <th>スタンプ</th>
                         <th>ポイント</th>
                         <th>クリック数</th>
                         <th>作成日時</th>
-
                         <th>削除</th>
                     </tr>
                     </thead>
@@ -280,7 +400,6 @@
                 </table>
                 `;
             $("#output").html(table);
-
 
             //----------------------------------------
             // ▼画像の更新関数
@@ -335,10 +454,10 @@
                             console.error('画像のアップロード中にエラーが発生しました', error);
                         });
                 });
-
                 // ファイル選択ダイアログを表示
                 inputFile.click();
             });
+
             //----------------------------------------
             // ▼その場編集の実装
             //----------------------------------------
@@ -354,30 +473,54 @@
 
                 $(this).empty().append(inputElement); // 要素を一度空にしてから <input> 要素を追加
 
-                inputElement.focus().blur(function() {
-                    let inputVal = $(this).val();
-                    if (inputVal === '') {
-                        inputVal = this.defaultValue;
+                inputElement.focus().keydown(function(event) {
+                    if (event.which === 13) { // エンターキーのキーコードは13
+                        event.preventDefault(); // デフォルトのイベント（改行）をキャンセル
+                        let inputVal = $(this).val();
+
+                        // 全角数字を半角数字に変換
+                        inputVal = inputVal.replace(/[０-９]/g, function(s) {
+                            return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+                        });
+
+                        // エラーチェック：全角文字が含まれているかを検証
+                        if (/^[^\x01-\x7E\xA1-\xDF]+$/.test(inputVal)) {
+                            alert("入力に全角文字が含まれています。半角文字のみ入力してください。");
+                            return;
+                        }
+                        // Firebaseのデータを更新する処理を追加
+                        const documentId = $(this).closest('tr').find('.delete-btn').data('id');
+                        updateFirebaseData(documentId, inputVal);
+
+                        $(this).parent().removeClass('on').text(inputVal);
                     }
-                    // // Firebaseのデータを更新する処理を追加
+
+                }).blur(function() {
+                    let inputVal = $(this).val();
+
+                    // エラーチェック：全角文字が含まれているかを検証
+                    if (/^[^\x01-\x7E\xA1-\xDF]+$/.test(inputVal)) {
+                        return;
+                    }
+
+                    // Firebaseのデータを更新する処理を追加
                     const documentId = $(this).closest('tr').find('.delete-btn').data('id');
                     updateFirebaseData(documentId, inputVal);
 
                     $(this).parent().removeClass('on').text(inputVal);
                 });
+
+                // テキスト全体を選択状態にする
+                inputElement.select();
             });
 
 
-            // データの収集
-            const countData = dataArray.map(item => item.count);
-
-            // 画像のURLを収集
-            const imageUrls = dataArray.map(item => item.img);
-
-            console.log(countData, imageUrls);
+            //----------------------------------------
+            // ▼チャートの描画
+            //----------------------------------------
 
             // 色の設定
-            const colors = ['#687c8d', '#96abbd', '#e9e9e9', '#c5bfb9', '#948f89', '#000000'].slice(0, dataArray.length);
+            const colors = ['#7e7d9d', '#9d97b1', '#e1e1f0', '#bfb8c6', '#9e8f9e', '#1e1e33'].slice(0, documents.length);
 
             // チャートを作成する前に既存のチャートを破棄
             const existingChart = Chart.getChart('myChart');
@@ -404,6 +547,7 @@
                 plugins: [
                     ChartDataLabels
                 ],
+
                 options: {
                     plugins: {
                         datalabels: {
@@ -411,11 +555,12 @@
                             font: {
                                 size: 18
                             },
-                            display: true,
 
+                            display: true,
                         },
                         legend: {}
                     },
+
                 },
 
             });
@@ -452,6 +597,3 @@
 </body>
 
 </html>
-
-<!-- <td>${idFormatted}</td> -->
-<!-- <th>ID</th> -->

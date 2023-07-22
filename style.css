@@ -1,25 +1,45 @@
 body {
-    width: 500px;
+    /* width: 500px; */
     height: auto;
     background-repeat: no-repeat;
-    left: 0px;
-    position: relative;
+    /* left: 0px; */
+    /* position: relative; */
+}
+
+/************************** 
+スタンプ登録エリア
+***************************/
+
+input {
+    width: 100px;
+ } 
+
+.input-point {
+width: 60px;
+height: 30px;
+text-align: center;
+font-size: 20px; 
 }
 
 #imagePreview {
-    top: 20px;
+    /* top: 20px;
     left: 320px;
-    position: absolute;
+    position: absolute; */
+
 }
 
 #imagePreview img{
     width: 100px;
-   
+    margin: 10px;
 }
+
+/************************** 
+登録スタンプ表示画面
+***************************/
 
 table {
     border-collapse: collapse;
-    width: 470px;
+    width: 530px;
 }
 
 td {
@@ -33,25 +53,31 @@ td img {
     margin: 0 auto;
 }
 
- input {
-    width: 100px;
- } 
 
- .input-point {
-    width: 50px;
-    height: 30px;
-    text-align: center;
-    font-size: 20px; 
-  }
-
+.delete-btn {
+/* ボタン自体のスタイルを削除 */
+background: none;
+border: none;
+padding: 0;
+margin: 0;
+cursor: pointer;
+}
 
 
-/************************** 
-登録スタンプ表示画面
-***************************/
 .image_thumnail img{
     width: 36px;
 }
+
+
+.even-row {
+    background-color: #e1e1f0; /* 偶数行の背景色を設定 */
+}
+
+.odd-row {
+    background-color: #ffffff; /* 奇数行の背景色を設定 */
+}
+
+
 
  /************************** 
 チャートjs画面
@@ -59,6 +85,37 @@ td img {
 #chart_wrapper {
     width: 300px;
     /* top: 310px; */
-    left: 80px;
-    position: absolute;
+    /* left: 80px; */
+    /* position: absolute; */
 }
+
+ /************************** 
+スタンプのアニメ挙動
+***************************/
+
+/* 画像コンテナのスタイル */
+.image-container {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    height: 300px; /* 画像の高さを適切な値に調整 */
+  }
+  
+  /* スライドインアニメーションのスタイル */
+  .sliding-image {
+    width: 200px; /* 画像の幅を適切な値に調整 */
+    height: 200px; /* 画像の高さを適切な値に調整 */
+    margin-right: 10px; /* 画像の間隔を調整 */
+    animation: slideRight 10s linear infinite;
+  }
+  
+  /* アニメーションの定義 */
+  @keyframes slideRight {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
