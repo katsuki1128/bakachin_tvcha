@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>スタンプ作成画面</title>
+    <title>オーバーレイ画面</title>
 
     <!-- CSS & Tailwind -->
     <link rel="stylesheet" href="style.css">
@@ -26,8 +26,9 @@
 
 <body>
     <!-- ⭐️スタンプ表示エリア -->
-    <div>
-        <canvas id="overlay" width="640" height="360"></canvas>
+    <div style="position: relative;">
+        <img src="img/Sequence04.gif" style="position: absolute; top: 0; left: 0; z-index: 1;">
+        <canvas id="overlay" width="640" height="360" style="position: absolute; top: 0; left: 0; z-index: 2;"></canvas>
     </div>
 
     <script type="module">
@@ -91,6 +92,14 @@
         // クリックされたスタンプのURLを格納する配列
         let clickStamp = "";
         const clickStamps = [];
+        const canvas = document.getElementById('overlay');
+
+        const ctx = canvas.getContext('2d');
+        const stamps = []; // スタンプの情報を保持する配列
+
+
+
+        console.log("stamps", stamps);
 
         // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
         onSnapshot(q, (querySnapshot) => {
@@ -109,7 +118,7 @@
 
                 clickStamp = change.doc.data().img;
                 clickStamps.push(clickStamp);
-                console.log("クリックされたスタンプ配列", clickStamps);
+                // console.log("クリックされたスタンプ配列", clickStamps);
 
                 drawImageOnCanvas(); // 画像をCanvas上に描画
 
@@ -143,60 +152,65 @@
                 imageUrls.push(img);
             });
 
-            console.log("countData", countData);
-            // console.log("imageUrls", imageUrls);
-
-
-
-
-
-
-            // 画像の読み込みが完了したら描画を開始する
-            // const loadImage = (url) => { //loadImage関数を定義 urlを引数にする
-            //     return new Promise((resolve, reject) => { //Promiseを返す resolveとrejectを引数にする
-            //         const img = new Image(); //new Image()をimgに代入
-            //         img.src = url; //imgのsrcにurlを代入
-            //         img.onload = () => resolve(img); //img.onloadが実行されたらresolve(img)を実行
-            //         img.onerror = (error) => reject(error); //img.onerrorが実行されたらreject(error)を実行
-            //     });
-            // };
-
-            // キャンバスの描画
-            const canvas = document.getElementById('overlay');
-            const ctx = canvas.getContext('2d');
+            // console.log("countData", countData);
 
             //----------------------------------------
-            // ▼スタンプが放物線を描く
+            // ▼スタンプが画面中央に来る
             //----------------------------------------
 
-            // clickStampが更新されたら描画するための関数
             function drawImageOnCanvas() {
-
-
                 const image = new Image();
                 image.onload = function() {
-                    let posX = 0; // 初期位置をCanvasの左端に設定
-                    let posY = canvas.height; // 初期位置をCanvasの底辺に設定
-                    let velocityY = -18; // 初速度を設定（下向きのため負の値）
-                    const gravity = 0.5; // 重力の影響を表す定数
+                    const centerX = canvas.width / 2;
+                    const centerY = canvas.height / 2;
+                    let posX, posY;
+                    let velocityX = (centerX - posX) * 0.05;
+                    let velocityY = (centerY - posY) * 0.05;
+
+                    if (Math.random() < 0.5) {
+                        posX = Math.random() * canvas.width;
+                        posY = Math.random() < 0.5 ? 0 : canvas.height;
+                    } else {
+                        posX = Math.random() < 0.5 ? 0 : canvas.width;
+                        posY = Math.random() * canvas.height;
+                    }
+                    // console.log("posX", posX, "posY", posY);
+
+                    const stampInfo = {
+                        image: image,
+                        posX: posX,
+                        posY: posY,
+                        velocityX: (centerX - posX) * 0.05,
+                        velocityY: (centerY - posY) * 0.05
+                    };
+                    stamps.push(stampInfo);
+                    console.log("stamps", stamps);
 
                     function animate() {
+                        // 背景を赤色に塗りつぶす
 
-                        ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                        // 位置を更新
-                        posX += 8; // 速度による位置の変化
-                        velocityY += gravity; // 重力による速度の増加
-                        posY += velocityY; // 速度による位置の変化
+                        // 背景色を赤色に設定し、アルファチャンネルを持たせる（透明度0.5）
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                        // スタンプがCanvas外に出たらリセット
-                        // if (posY + 100 < 0) {
-                        //     posY = canvas.height;
-                        //     velocityY = -10; // スタンプが下に再び飛び出すための初速度
-                        // }
+                        for (const stamp of stamps) {
+                            stamp.posX += stamp.velocityX;
+                            stamp.posY += stamp.velocityY;
 
-                        // スタンプを描画
-                        ctx.drawImage(image, posX, posY, 100, 100);
+                            const distanceToCenter = Math.sqrt((canvas.width / 2 - stamp.posX) ** 2 + (canvas.height / 2 - stamp.posY) ** 2);
+                            const dampingFactor = Math.min(1, distanceToCenter / 150);
+                            stamp.velocityX *= dampingFactor;
+                            stamp.velocityY *= dampingFactor;
+
+                            ctx.drawImage(stamp.image, stamp.posX, stamp.posY, 100, 100);
+
+                            if (Math.abs(stamp.velocityX) < 0.1 && Math.abs(stamp.velocityY) < 0.1) {
+                                stamp.velocityX = 0;
+                                stamp.velocityY = 0;
+                            }
+                        }
 
                         // 次のフレームの描画をリクエスト
                         requestAnimationFrame(animate);
@@ -204,13 +218,109 @@
 
                     // アニメーションを開始
                     animate();
-
                 };
+
                 image.src = clickStamps[clickStamps.length - 1]; // clickStampsに画像のURLが格納されていると仮定しています
             }
 
 
+            // function drawImageOnCanvas() {
+            //     const image = new Image();
+            //     image.onload = function() {
+            //         // スタンプの初期位置をランダムに設定
+            //         let posX, posY;
 
+            //         if (Math.random() < 0.5) {
+            //             posX = Math.random() * canvas.width;
+            //             posY = Math.random() < 0.5 ? 0 : canvas.height;
+            //         } else {
+            //             posX = Math.random() < 0.5 ? 0 : canvas.width;
+            //             posY = Math.random() * canvas.height;
+            //         }
+            //         console.log("posX", posX, "posY", posY);
+
+            //         // 画面中央の座標
+            //         const centerX = canvas.width / 2;
+            //         const centerY = canvas.height / 2;
+
+            //         // 初速度をランダムに設定
+            //         let velocityX = (centerX - posX) * 0.05;
+            //         let velocityY = (centerY - posY) * 0.05;
+            //         // console.log("velocityX", velocityX, "velocityY", velocityY);
+
+            //         // アニメーション関数
+            //         function animate() {
+            //             ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
+
+            //             // 位置を更新
+            //             posX += velocityX;
+            //             posY += velocityY;
+
+            //             // 画面中央に近づくにつれて速度を減衰させる
+            //             const distanceToCenter = Math.sqrt((centerX - posX) ** 2 + (centerY - posY) ** 2); //sqrtは平方根 Math.sqrt(4) = 2
+            //             const dampingFactor = Math.min(1, distanceToCenter / 100); // 300は減衰の開始位置（任意の値）
+            //             velocityX *= dampingFactor;
+            //             velocityY *= dampingFactor;
+
+            //             // スタンプを描画
+            //             ctx.drawImage(image, posX, posY, 100, 100);
+
+            //             // 速度が一定値以下になったらアニメーションを終了
+            //             if (Math.abs(velocityX) < 0.1 && Math.abs(velocityY) < 0.1) {
+            //                 return; //returnは関数の処理を終了する
+            //             }
+
+            //             // 次のフレームの描画をリクエスト
+            //             requestAnimationFrame(animate); //
+            //         }
+            //         // アニメーションを開始
+            //         animate();
+            //     };
+            //     image.src = clickStamps[clickStamps.length - 1]; // clickStampsに画像のURLが格納されていると仮定しています
+            // }
+
+            //----------------------------------------
+            // ▼スタンプが放物線を描く
+            //----------------------------------------
+
+            // clickStampが更新されたら描画するための関数
+            // function drawImageOnCanvas() {
+
+            //     const image = new Image();
+            //     image.onload = function() {
+            //         let posX = 0; // 初期位置をCanvasの左端に設定
+            //         let posY = canvas.height; // 初期位置をCanvasの底辺に設定
+            //         let velocityY = -18; // 初速度を設定（下向きのため負の値）
+            //         const gravity = 0.5; // 重力の影響を表す定数
+
+            //         function animate() {
+
+            //             ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
+
+            //             // 位置を更新
+            //             posX += 8; // 速度による位置の変化
+            //             velocityY += gravity; // 重力による速度の増加
+            //             posY += velocityY; // 速度による位置の変化
+
+            //             // スタンプがCanvas外に出たらリセット
+            //             // if (posY + 100 < 0) {
+            //             //     posY = canvas.height;
+            //             //     velocityY = -10; // スタンプが下に再び飛び出すための初速度
+            //             // }
+
+            //             // スタンプを描画
+            //             ctx.drawImage(image, posX, posY, 100, 100);
+
+            //             // 次のフレームの描画をリクエスト
+            //             requestAnimationFrame(animate);
+            //         }
+
+            //         // アニメーションを開始
+            //         animate();
+
+            //     };
+            //     image.src = clickStamps[clickStamps.length - 1]; // clickStampsに画像のURLが格納されていると仮定しています
+            // }
 
         });
     </script>

@@ -120,9 +120,9 @@ const handleSubmit = () => {
       <Text style={{ fontSize: 36 }}>👇テレビをスマホに配信だよ</Text>
       <Image
         style={styles.imagetv}
+        // source={{ uri: "http://localhost/gs/bakachin-tvcha/tv_overlay.php" }} 
         source={require('./Sequence04.gif')} />
 
-      
       <Text style={{ fontSize: 36 }}>👇スタンプエリア</Text>
       <View style={styles.row}>
         {stampList.map((data, id) => (
@@ -155,7 +155,7 @@ const handleSubmit = () => {
          </View>
       <StatusBar style="auto" />
 
-      <View style={{ marginTop: 20 }}>
+      {/* <View style={{ marginTop: 20 }}>
         <TextInput
           style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10 }}
           onChangeText={handleUserIdChange}
@@ -170,7 +170,7 @@ const handleSubmit = () => {
           secureTextEntry={true} // パスワード入力を隠す
         />
         <Button title="送信" onPress={handleSubmit} />
-      </View>
+      </View> */}
 
     </View>
   );
