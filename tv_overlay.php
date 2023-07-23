@@ -88,7 +88,9 @@
         // 🔽 データ取得条件の指定（今回は時間の新しい順に並び替えて取得）
         const q = query(collection(db, "tvcha"), orderBy("time", "desc"));
 
-        let clickImg = "";
+        // クリックされたスタンプのURLを格納する配列
+        let clickStamp = "";
+        const clickStamps = [];
 
         // データ取得処理(データベース上でデータの変更が発生したタイミングで {} 内の処理を実行)
         onSnapshot(q, (querySnapshot) => {
@@ -101,14 +103,13 @@
                 };
                 documents.push(document); //配列の先頭に追加 
 
-                // 新しく追加されたドキュメントのIDを取得
-
             });
 
             querySnapshot.docChanges().forEach((change) => {
 
-                clickImg = change.doc.data().img;
-                console.log("クリックされたスタンプ", clickImg);
+                clickStamp = change.doc.data().img;
+                clickStamps.push(clickStamp);
+                console.log("クリックされたスタンプ配列", clickStamps);
 
                 drawImageOnCanvas(); // 画像をCanvas上に描画
 
@@ -125,6 +126,7 @@
             //      point: 'ポイント',
             //      count: 'カウント',
             //      time: '作成日時など'
+            //      clickStamps: 'クリックされたスタンプのURL配列'
             // countData : 'カウントの配列',
             // imageUrls : '画像のURLの配列'
             //----------------------------------------
@@ -145,9 +147,7 @@
             // console.log("imageUrls", imageUrls);
 
 
-            //----------------------------------------
-            // ▼チャートの描画
-            //----------------------------------------
+
 
 
 
@@ -161,32 +161,39 @@
             //     });
             // };
 
-            // チャートの描画
+            // キャンバスの描画
             const canvas = document.getElementById('overlay');
             const ctx = canvas.getContext('2d');
 
-            // clickImgが更新されたら描画するための関数
+            //----------------------------------------
+            // ▼スタンプが放物線を描く
+            //----------------------------------------
+
+            // clickStampが更新されたら描画するための関数
             function drawImageOnCanvas() {
+
+
                 const image = new Image();
                 image.onload = function() {
-                    let posX = 50; // 初期位置をCanvasの左端に設定
+                    let posX = 0; // 初期位置をCanvasの左端に設定
                     let posY = canvas.height; // 初期位置をCanvasの底辺に設定
-                    let velocityY = -15; // 初速度を設定（下向きのため負の値）
+                    let velocityY = -18; // 初速度を設定（下向きのため負の値）
                     const gravity = 0.5; // 重力の影響を表す定数
 
                     function animate() {
+
                         ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvasをクリア
 
                         // 位置を更新
-                        posX += 10; // 速度による位置の変化
+                        posX += 8; // 速度による位置の変化
                         velocityY += gravity; // 重力による速度の増加
                         posY += velocityY; // 速度による位置の変化
 
                         // スタンプがCanvas外に出たらリセット
-                        if (posY + 100 < 0) {
-                            posY = canvas.height;
-                            velocityY = -10; // スタンプが下に再び飛び出すための初速度
-                        }
+                        // if (posY + 100 < 0) {
+                        //     posY = canvas.height;
+                        //     velocityY = -10; // スタンプが下に再び飛び出すための初速度
+                        // }
 
                         // スタンプを描画
                         ctx.drawImage(image, posX, posY, 100, 100);
@@ -198,29 +205,12 @@
                     // アニメーションを開始
                     animate();
 
-
-                    // Canvas上に描画
-                    // ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    // ctx.drawImage(image, 0, 0, 100, 100);
                 };
-                image.src = clickImg; // clickImgに画像のURLが格納されていると仮定しています
+                image.src = clickStamps[clickStamps.length - 1]; // clickStampsに画像のURLが格納されていると仮定しています
             }
 
-            // 画像をcanvasに描画する関数
-            // const drawImageOnCanvas = async (url, x, y) => {
-            //     try {
-            //         const img = await loadImage(url);
-            //         ctx.drawImage(img, x, y);
-            //     } catch (error) {
-            //         console.error('画像の読み込みエラー:', error);
-            //     }
-            // };
 
-            // 画像をコンテナに追加し、アニメーションを開始
-            // const imageContainer = document.querySelector('.image-container');
-            // imageUrls.forEach((url, index) => {
-            //     drawImageOnCanvas(url, index * 100, 10); // x座標とy座標を適切な位置に設定
-            // });
+
 
         });
     </script>
