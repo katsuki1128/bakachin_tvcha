@@ -32,8 +32,8 @@
     <script src="https://kit.fontawesome.com/e6a146d4cb.js" crossorigin="anonymous"></script>
 
 
+    <!-- <script src="./firebase-config.js" type="module"></script> -->
     <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.css" rel="stylesheet" /> -->
-
     <!-- <script src="tvcha-app/node_modules/chartjs-plugin-labels/dist/chartjs-plugin-labels.js"></script> -->
 
 </head>
@@ -317,7 +317,6 @@
         function displayImage(downloadURL, element) {
             const img = document.createElement('img');
             img.src = downloadURL;
-            img.alt = 'Image';
             element.appendChild(img);
         }
 
@@ -328,7 +327,6 @@
                 const document = {
                     id: doc.id,
                     data: doc.data(),
-
                 };
                 documents.push(document);
             });
@@ -343,9 +341,12 @@
             //      point: 'ポイント',
             //      count: 'カウント',
             //      time: '作成日時など'
+            // countData : 'カウントの配列',
+            // imageUrls : '画像のURLの配列'
             //----------------------------------------
 
             let tableRows = '';
+
             documents.forEach(function(document, index) {
                 const deleteButton = `<button class="delete-btn" data-id="${document.id}"><i class="fas fa-trash"></i></button>`;
                 const rowStyleClass = index % 2 === 0 ? 'even-row' : 'odd-row'; // 奇数行と偶数行でスタイルを切り替える
@@ -355,8 +356,6 @@
 
                 // imageUrlsにdocument.data.imgを追加
                 imageUrls.push(document.data.img);
-
-                console.log("countData", countData, "imageUrls", imageUrls);
 
                 tableRows += `
                     <tr style="height: 46px;" class="${rowStyleClass}">
@@ -377,9 +376,6 @@
                     .then((downloadURL) => {
                         const imageElement = $(`#image-${index}`)[0];
                         displayImage(downloadURL, imageElement);
-                    })
-                    .catch((error) => {
-                        console.error('画像のダウンロード中にエラーが発生しました', error);
                     });
             });
 
@@ -400,6 +396,8 @@
                 </table>
                 `;
             $("#output").html(table);
+
+            console.log("countData", countData, "imageUrls", imageUrls);
 
             //----------------------------------------
             // ▼画像の更新関数
@@ -495,7 +493,7 @@
                         $(this).parent().removeClass('on').text(inputVal);
                     }
 
-                }).blur(function() {
+                }).blur(function() { //blurとは、フォーカスが外れた時に発生するイベント
                     let inputVal = $(this).val();
 
                     // エラーチェック：全角文字が含まれているかを検証
@@ -565,6 +563,8 @@
 
             });
         });
+
+
 
         $(document).on('click', '.delete-btn', function() {
             const documentId = $(this).data('id');

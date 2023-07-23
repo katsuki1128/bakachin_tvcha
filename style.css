@@ -87,35 +87,3 @@ cursor: pointer;
     /* top: 310px; */
     /* left: 80px; */
     /* position: absolute; */
-}
-
- /************************** 
-スタンプのアニメ挙動
-***************************/
-
-/* 画像コンテナのスタイル */
-.image-container {
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    height: 300px; /* 画像の高さを適切な値に調整 */
-  }
-  
-  /* スライドインアニメーションのスタイル */
-  .sliding-image {
-    width: 200px; /* 画像の幅を適切な値に調整 */
-    height: 200px; /* 画像の高さを適切な値に調整 */
-    margin-right: 10px; /* 画像の間隔を調整 */
-    animation: slideRight 10s linear infinite;
-  }
-  
-  /* アニメーションの定義 */
-  @keyframes slideRight {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
-  
