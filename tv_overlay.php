@@ -11,16 +11,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>オーバーレイ画面</title>
 
-    <!-- CSS & Tailwind -->
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="reset.css">
 
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 </head>
 
@@ -28,7 +25,7 @@
     <!-- ⭐️スタンプ表示エリア -->
     <div style="position: relative;">
         <img src="img/Sequence04.gif" style="position: absolute; top: 0; left: 0; z-index: 1;">
-        <canvas id="overlay" width="640" height="360" style="position: absolute; top: 0; left: 0; z-index: 2;"></canvas>
+        <canvas id="overlay" width="720" height="405" style="position: absolute; top: 0; left: 0; z-index: 2;"></canvas>
     </div>
 
     <script type="module">
@@ -163,6 +160,7 @@
                 image.onload = function() {
                     const centerX = canvas.width / 2;
                     const centerY = canvas.height / 2;
+                    // console.log("centerX", centerX, "centerY", centerY);
                     let posX, posY;
                     let velocityX = (centerX - posX) * 0.05;
                     let velocityY = (centerY - posY) * 0.05;
@@ -176,12 +174,15 @@
                     }
                     // console.log("posX", posX, "posY", posY);
 
+
+                    // console.log("velocityX", velocityX, "velocityY", velocityY);
+
                     const stampInfo = {
                         image: image,
                         posX: posX,
                         posY: posY,
-                        velocityX: (centerX - posX) * 0.05,
-                        velocityY: (centerY - posY) * 0.05
+                        velocityX: (centerX - posX) * 0.01,
+                        velocityY: (centerY - posY) * 0.01,
                     };
                     stamps.push(stampInfo);
                     console.log("stamps", stamps);
